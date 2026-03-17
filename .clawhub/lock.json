@@ -60,6 +60,18 @@
     "superpowers": {
       "version": "1.0.0",
       "installedAt": 1773653591338
+    },
+    "web-design": {
+      "version": "1.0.0",
+      "installedAt": 1773708551590
+    },
+    "skill-safety-checker": {
+      "version": "1.0.0",
+      "installedAt": 1773744927758
+    },
+    "image-ocr-reader": {
+      "version": "1.0.0",
+      "installedAt": 1773761438594
     }
   }
 }

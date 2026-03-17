@@ -30,6 +30,24 @@
       "zip_url": "https://lightmake.site/api/v1/download?slug=superpowers",
       "source": "skillhub",
       "version": "1.0.0"
+    },
+    "web-design": {
+      "name": "Web Design",
+      "zip_url": "https://lightmake.site/api/v1/download?slug=web-design",
+      "source": "skillhub",
+      "version": "1.0.0"
+    },
+    "skill-safety-checker": {
+      "name": "Skill Safety Checker",
+      "zip_url": "https://lightmake.site/api/v1/download?slug=skill-safety-checker",
+      "source": "skillhub",
+      "version": "1.0.0"
+    },
+    "image-ocr-reader": {
+      "name": "Image OCR Reader",
+      "zip_url": "https://lightmake.site/api/v1/download?slug=image-ocr-reader",
+      "source": "skillhub",
+      "version": "1.0.0"
     }
   }
 }
