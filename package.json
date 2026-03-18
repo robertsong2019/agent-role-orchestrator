@@ -1,0 +1,26 @@
+{
+  "name": "agent-role-orchestrator",
+  "version": "1.0.0",
+  "description": "Lightweight demonstration of role-based AI agent collaboration",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts"
+  },
+  "keywords": [
+    "ai",
+    "agent",
+    "orchestration",
+    "role-based",
+    "collaboration"
+  ],
+  "author": "首尔虾",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "ts-node": "^10.9.0"
+  }
+}
