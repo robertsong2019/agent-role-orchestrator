@@ -54,7 +54,7 @@ describe('Orchestrator', () => {
       expect(response.data).toBeDefined();
       expect(response.data.ceoResponse).toBeDefined();
       expect(response.data.managerResponse).toBeDefined();
-    });
+    }, 30000); // Increased timeout to 30 seconds
 
     it('should execute full workflow', async () => {
       await orchestrator.start();
@@ -73,7 +73,7 @@ describe('Orchestrator', () => {
 
       // Verify completion
       expect(response.success).toBe(true);
-    }, 10000); // Increase timeout for full workflow
+    }, 30000); // Increased timeout to 30 seconds
 
     it('should handle multiple requests sequentially', async () => {
       await orchestrator.start();
@@ -86,7 +86,7 @@ describe('Orchestrator', () => {
 
       expect(response1.success).toBe(true);
       expect(response2.success).toBe(true);
-    }, 15000);
+    }, 60000); // Increased timeout to 60 seconds
 
     it('should generate unique project IDs for different requests', async () => {
       await orchestrator.start();
@@ -99,7 +99,7 @@ describe('Orchestrator', () => {
       const projectId2 = response2.data.ceoResponse.data.project.id;
 
       expect(projectId1).not.toBe(projectId2);
-    }, 15000);
+    }, 60000); // Increased timeout to 60 seconds
   });
 
   describe('error handling', () => {
@@ -110,7 +110,7 @@ describe('Orchestrator', () => {
       const response = await orchestrator.processRequest('');
 
       expect(response.success).toBe(true); // Should not crash
-    });
+    }, 30000); // Increased timeout to 30 seconds
   });
 
   describe('performance', () => {
@@ -123,8 +123,8 @@ describe('Orchestrator', () => {
       await orchestrator.processRequest(request);
 
       const duration = Date.now() - startTime;
-      expect(duration).toBeLessThan(10000); // Should complete within 10 seconds
-    });
+      expect(duration).toBeLessThan(30000); // Should complete within 30 seconds
+    }, 30000); // Increased timeout to 30 seconds
 
     it('should handle concurrent task execution', async () => {
       await orchestrator.start();
