@@ -1,17 +1,36 @@
-# Dependencies
-node_modules/
+# 敏感文件 - 绝不要提交到 Git
+TOOLS.md
+MEMORY.md
+USER.md
+.env
+.env.local
+*.key
+*.token
+*_token
+*_secret
 
-# Build output
-dist/
+# OpenClaw 敏感文件
+.openclaw/workspace-state.json
 
-# IDE
-.vscode/
-.idea/
+# 常见敏感文件
+credentials.json
+secrets.json
+config.local.*
+*.pem
+*.p12
 
-# OS
+# 操作系统文件
 .DS_Store
 Thumbs.db
 
-# Logs
+# 编辑器文件
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 依赖和构建产物
+node_modules/
+dist/
+build/
 *.log
-npm-debug.log*
