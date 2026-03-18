@@ -50,7 +50,7 @@ describe('End-to-End Workflow', () => {
     expect(response.success).toBe(true);
     console.log(`\n✅ Project completed successfully!\n`);
     console.log('=== End-to-End Test Passed ===\n');
-  }, 10000);
+  }, 30000); // Increased timeout to 30s
 
   it('should handle multiple project types', async () => {
     const requests = [
@@ -81,5 +81,5 @@ describe('End-to-End Workflow', () => {
     expect(project1.name).not.toBe(project2.name);
 
     console.log(`✅ Project isolation maintained`);
-  }, 15000);
+  }, 60000); // Increased timeout to 60s
 });

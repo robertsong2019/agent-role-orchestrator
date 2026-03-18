@@ -168,13 +168,45 @@ This project is inspired by:
 ## Future Enhancements
 
 - [x] Comprehensive test suite (55 tests)
+- [x] LLM API integration (Zhipu AI GLM-5)
 - [ ] Add memory system for long-term context
 - [ ] Implement conflict resolution between agents
 - [ ] Add more specialized roles (QA, DevOps, etc.)
 - [ ] Support for async task execution
-- [ ] Integration with real AI APIs (OpenAI, Anthropic, etc.)
 - [ ] Persistent storage for projects and tasks
 - [ ] Web UI for monitoring and control
+
+## LLM Integration
+
+The system now supports real AI inference through Zhipu AI's GLM-5 API:
+
+### Setup
+
+1. Get your API key from [Zhipu AI](https://open.bigmodel.cn/)
+2. Create a `.env` file:
+   ```bash
+   cp .env.example .env
+   # Edit .env and add your API key
+   ```
+
+3. Enable LLM mode when creating workers:
+   ```typescript
+   const worker = new WorkerAgent('worker-1', { useLLM: true });
+   ```
+
+### How It Works
+
+- **Simulation Mode** (default): Uses delays to simulate work
+- **LLM Mode**: Sends tasks to GLM-5 for real AI-generated output
+- **Automatic Fallback**: If LLM fails, automatically falls back to simulation
+
+### Task Types & System Prompts
+
+Each task type has specialized system prompts:
+- **Implementation**: Expert developer for clean, efficient code
+- **Testing**: QA engineer for comprehensive test coverage
+- **Documentation**: Technical writer for clear documentation
+- **Review**: Code reviewer for quality feedback
 
 ## Development
 

@@ -80,19 +80,19 @@ export class CEOAgent implements Agent {
   }
 
   private extractProjectName(request: string): string {
-    // Simple extraction (in real implementation, use LLM)
-    const keywords = ['build', 'create', 'implement', 'develop'];
-    let name = request.toLowerCase();
+    // Extract a meaningful project name from the request
+    const keywords = ['build', 'create', 'implement', 'develop', 'design'];
+    let name = request.toLowerCase().trim();
     
+    // Remove common keywords to get the core description
     for (const keyword of keywords) {
-      const index = name.indexOf(keyword);
-      if (index !== -1) {
-        name = name.substring(0, index + keyword.length).trim();
-        break;
-      }
+      const regex = new RegExp(`^${keyword}\\s+`, 'i');
+      name = name.replace(regex, '');
     }
     
-    return name || 'Unnamed Project';
+    // Take first 3-4 words as project name
+    const words = name.split(/\s+/).slice(0, 4);
+    return words.join(' ') || 'Unnamed Project';
   }
 
   private analyzePriorities(request: string): string[] {
