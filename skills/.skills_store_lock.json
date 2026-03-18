@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "skills": {
+    "claude-code-task": {
+      "name": "Claude Code Task",
+      "zip_url": "https://lightmake.site/api/v1/download?slug=claude-code-task",
+      "source": "skillhub",
+      "version": "1.2.5"
+    },
+    "ralph-loop-agent": {
+      "name": "Ralph Loop (Agent Mode)",
+      "zip_url": "https://lightmake.site/api/v1/download?slug=ralph-loop-agent",
+      "source": "skillhub",
+      "version": "1.1.0"
+    },
+    "ralph-mode": {
+      "name": "Ralph Mode - Autonomous Development Loops",
+      "zip_url": "https://lightmake.site/api/v1/download?slug=ralph-mode",
+      "source": "skillhub",
+      "version": "1.2.0"
+    },
+    "brainstorming": {
+      "name": "Brainstorming",
+      "zip_url": "https://lightmake.site/api/v1/download?slug=brainstorming",
+      "source": "skillhub",
+      "version": "0.1.0"
+    },
+    "superpowers": {
+      "name": "Superpowers Dev Workflow",
+      "zip_url": "https://lightmake.site/api/v1/download?slug=superpowers",
+      "source": "skillhub",
+      "version": "1.0.0"
+    },
+    "web-design": {
+      "name": "Web Design",
+      "zip_url": "https://lightmake.site/api/v1/download?slug=web-design",
+      "source": "skillhub",
+      "version": "1.0.0"
+    },
+    "skill-safety-checker": {
+      "name": "Skill Safety Checker",
+      "zip_url": "https://lightmake.site/api/v1/download?slug=skill-safety-checker",
+      "source": "skillhub",
+      "version": "1.0.0"
+    },
+    "image-ocr-reader": {
+      "name": "Image OCR Reader",
+      "zip_url": "https://lightmake.site/api/v1/download?slug=image-ocr-reader",
+      "source": "skillhub",
+      "version": "1.0.0"
+    }
+  }
+}
