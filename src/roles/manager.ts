@@ -15,7 +15,7 @@ import { Agent, AgentRole, Project, Task, AgentResponse } from '../types.js';
 export class ManagerAgent implements Agent {
   role: AgentRole = 'manager';
   name = 'Manager Agent';
-  private project: Project | null;
+  private project: Project | null = null;
   private tasks: Task[] = [];
 
   async initialize(): Promise<void> {
@@ -95,7 +95,7 @@ export class ManagerAgent implements Agent {
     return tasks;
   }
 
-  private async assignTasks(tasks: Task[]): Promise<Map<string, string>> {
+  private async assignTasks(tasks: Task[]): Promise<{ [taskId: string]: string }> {
     const assignments: { [taskId: string]: string } = {};
     
     for (const task of tasks) {

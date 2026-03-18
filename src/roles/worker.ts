@@ -14,7 +14,7 @@ import { Agent, AgentRole, Task, AgentResponse } from '../types.js';
 export class WorkerAgent implements Agent {
   role: AgentRole = 'worker';
   name: string;
-  private currentTask: Task | null;
+  private currentTask: Task | null = null;
 
   constructor(name: string) {
     this.name = name;

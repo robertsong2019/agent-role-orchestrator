@@ -14,7 +14,7 @@ import { Agent, AgentRole, Project, Task, AgentResponse } from '../types.js';
 export class CEOAgent implements Agent {
   role: AgentRole = 'ceo';
   name = 'CEO Agent';
-  private project: Project | null;
+  private project: Project | null = null;
 
   async initialize(): Promise<void> {
     console.log('👔 CEO Agent initialized');

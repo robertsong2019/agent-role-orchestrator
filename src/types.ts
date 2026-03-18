@@ -61,3 +61,9 @@ export interface AgentResponse {
   data?: any;
   nextActions?: string[];
 }
+
+export interface Agent {
+  role: AgentRole;
+  name: string;
+  initialize(): Promise<void>;
+}
