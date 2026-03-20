@@ -2,6 +2,12 @@
 
 🤖 A lightweight demonstration of role-based AI agent collaboration, inspired by [gstack](https://github.com/garrytan/gstack).
 
+## 📚 Documentation
+
+- **[API Reference](./API.md)** - Complete API documentation with examples
+- **[Tutorial](./TUTORIAL.md)** - Step-by-step guide to building multi-agent systems
+- **[Examples](./examples/)** - Code examples and real-world use cases
+
 ## Concept
 
 Instead of using a generic AI assistant for everything, this project demonstrates how to create specialized agents with specific roles, responsibilities, and tools - just like a real team.
