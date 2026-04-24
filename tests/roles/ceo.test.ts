@@ -4,12 +4,13 @@
 
 import { CEOAgent } from '../../src/roles/ceo';
 import { AgentRole } from '../../src/types';
+import { EventBus } from '../../src/events';
 
 describe('CEOAgent', () => {
   let ceo: CEOAgent;
 
   beforeEach(() => {
-    ceo = new CEOAgent();
+    ceo = new CEOAgent(new EventBus());
   });
 
   describe('initialization', () => {
@@ -27,7 +28,11 @@ describe('CEOAgent', () => {
   });
 
   describe('handleRequest', () => {
-    it('should analyze a request and create a project plan', async () => {
+  beforeEach(async () => {
+    await ceo.initialize();
+  });
+
+  it('should analyze a request and create a project plan', async () => {
       const request = 'Build a user authentication system';
       const response = await ceo.handleRequest(request);
 
@@ -70,7 +75,11 @@ describe('CEOAgent', () => {
   });
 
   describe('reviewProject', () => {
-    it('should approve completed projects', async () => {
+  beforeEach(async () => {
+    await ceo.initialize();
+  });
+
+  it('should approve completed projects', async () => {
       const project = {
         id: 'test-project',
         name: 'Test Project',

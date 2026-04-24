@@ -11,6 +11,7 @@
 
 import { Agent, AgentRole, Task, AgentResponse } from '../types.js';
 import { getLLMClient, LLMClient } from '../llm-client.js';
+import { MemorySystem } from '../memory.js';
 
 export interface WorkerConfig {
   useLLM?: boolean;
@@ -24,6 +25,7 @@ export class WorkerAgent implements Agent {
   private useLLM: boolean;
   private simulateDelay: number;
   private llmClient: LLMClient;
+  private memory!: MemorySystem;
 
   constructor(name: string, config: WorkerConfig = {}) {
     this.name = name;
@@ -33,7 +35,13 @@ export class WorkerAgent implements Agent {
   }
 
   async initialize(): Promise<void> {
-    console.log(`🔨 ${this.name} initialized and ready`);
+    this.memory = new MemorySystem({
+      working: { capacity: 3 },
+      shortTerm: { maxAgeMs: 3600000, maxEntries: 30 },
+      longTerm: { persistenceEnabled: false },
+    });
+    
+    console.log(`🔨 ${this.name} initialized with memory system`);
     if (this.useLLM && this.llmClient.isConfigured()) {
       console.log(`🤖 ${this.name}: LLM mode enabled`);
     } else if (this.useLLM) {
@@ -49,6 +57,29 @@ export class WorkerAgent implements Agent {
     
     console.log(`\n🔨 ${this.name}: Starting task "${task.description}"`);
     
+    // Check memory for similar tasks
+    const similarTasks = this.memory.longTerm.query({
+      type: 'task',
+      keywords: task.description.split(' ').slice(0, 3),
+      limit: 2,
+    });
+    
+    if (similarTasks.length > 0) {
+      console.log(`💭 ${this.name}: Recalled ${similarTasks.length} similar tasks from memory`);
+    }
+    
+    // Store current task in working memory
+    this.memory.working.add({
+      type: 'task',
+      content: `Working on: ${task.description}`,
+      importance: 0.9,
+      metadata: {
+        taskId: task.id,
+        taskType: task.type,
+        startedAt: new Date().toISOString(),
+      },
+    });
+    
     let result: any;
     
     if (this.useLLM && this.llmClient.isConfigured()) {
@@ -62,6 +93,32 @@ export class WorkerAgent implements Agent {
     task.updatedAt = new Date();
     
     console.log(`✅ ${this.name}: Completed task "${task.description}"`);
+    
+    // Store completion in short-term memory
+    this.memory.shortTerm.add({
+      type: 'fact',
+      content: `Completed ${task.type} task: ${task.description}`,
+      importance: 0.7,
+      metadata: {
+        taskId: task.id,
+        taskType: task.type,
+        duration: result.duration,
+      },
+    });
+    
+    // If task was particularly important, store in long-term memory
+    if (task.priority === 'high') {
+      this.memory.longTerm.add({
+        type: 'task',
+        content: `Successfully completed high-priority ${task.type}: ${task.description}`,
+        importance: 0.8,
+        metadata: {
+          taskId: task.id,
+          taskType: task.type,
+          completedAt: new Date().toISOString(),
+        },
+      });
+    }
     
     return {
       success: true,

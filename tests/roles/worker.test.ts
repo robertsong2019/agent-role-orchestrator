@@ -9,7 +9,7 @@ describe('WorkerAgent', () => {
   let worker: WorkerAgent;
 
   beforeEach(() => {
-    worker = new WorkerAgent('TestWorker');
+    worker = new WorkerAgent('TestWorker', { simulateDelay: 10 });
   });
 
   describe('initialization', () => {
@@ -27,6 +27,10 @@ describe('WorkerAgent', () => {
   });
 
   describe('executeTask', () => {
+    beforeEach(async () => {
+      await worker.initialize();
+    });
+
     it('should execute an implementation task', async () => {
       const task: Task = {
         id: 'task-1',
@@ -137,6 +141,9 @@ describe('WorkerAgent', () => {
   });
 
   describe('reportProgress', () => {
+    beforeEach(async () => {
+      await worker.initialize();
+    });
     it('should report current task when active', async () => {
       const task: Task = {
         id: 'task-7',
@@ -157,9 +164,9 @@ describe('WorkerAgent', () => {
 
   describe('multiple workers', () => {
     it('should allow multiple workers with different names', () => {
-      const worker1 = new WorkerAgent('Worker-1');
-      const worker2 = new WorkerAgent('Worker-2');
-      const worker3 = new WorkerAgent('Worker-3');
+      const worker1 = new WorkerAgent('Worker-1', { simulateDelay: 10 });
+      const worker2 = new WorkerAgent('Worker-2', { simulateDelay: 10 });
+      const worker3 = new WorkerAgent('Worker-3', { simulateDelay: 10 });
 
       expect(worker1.name).toBe('Worker-1');
       expect(worker2.name).toBe('Worker-2');
@@ -167,8 +174,10 @@ describe('WorkerAgent', () => {
     });
 
     it('should execute tasks concurrently', async () => {
-      const worker1 = new WorkerAgent('Worker-1');
-      const worker2 = new WorkerAgent('Worker-2');
+      const worker1 = new WorkerAgent('Worker-1', { simulateDelay: 10 });
+      const worker2 = new WorkerAgent('Worker-2', { simulateDelay: 10 });
+      await worker1.initialize();
+      await worker2.initialize();
 
       const task1: Task = {
         id: 'task-1',

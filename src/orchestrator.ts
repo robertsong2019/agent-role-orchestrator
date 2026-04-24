@@ -1,31 +1,34 @@
 /**
- * Orchestrator - Coordinates all agents
- * 
- * Responsibilities:
- * - Initialize all agents
- * - Route requests to appropriate agents
- * - Manage communication between agents
- * - Track overall progress
+ * Orchestrator - Coordinates all agents via EventBus + TaskQueue
  */
 
 import { CEOAgent } from './roles/ceo.js';
 import { ManagerAgent } from './roles/manager.js';
 import { WorkerAgent } from './roles/worker.js';
-import { AgentResponse } from './types.js';
+import { AgentResponse, Task } from './types.js';
+import { EventBus } from './events.js';
+import { TaskQueue, TaskExecutor } from './task-queue.js';
+import { TaskDecomposer } from './decomposer.js';
 
 export class Orchestrator {
   private ceo: CEOAgent;
   private manager: ManagerAgent;
   private workers: WorkerAgent[] = [];
   private isRunning: boolean = false;
+  private eventBus: EventBus;
+  private taskQueue: TaskQueue;
+  private decomposer: TaskDecomposer;
 
   constructor() {
-    this.ceo = new CEOAgent();
-    this.manager = new ManagerAgent();
+    this.eventBus = new EventBus();
+    this.taskQueue = new TaskQueue({ maxConcurrency: 2 }, this.eventBus);
+    this.decomposer = new TaskDecomposer();
+    this.ceo = new CEOAgent(this.eventBus);
+    this.manager = new ManagerAgent(this.eventBus, this.decomposer);
     this.workers = [
       new WorkerAgent('Worker-1'),
       new WorkerAgent('Worker-2'),
-      new WorkerAgent('Worker-3')
+      new WorkerAgent('Worker-3'),
     ];
   }
 
@@ -38,7 +41,8 @@ export class Orchestrator {
     this.isRunning = true;
     console.log('🚀 Starting Agent Role Orchestrator...\n');
 
-    // Initialize all agents
+    await this.eventBus.emit('orchestrator:started', {}, 'system');
+
     await this.ceo.initialize();
     await this.manager.initialize();
     for (const worker of this.workers) {
@@ -57,34 +61,53 @@ export class Orchestrator {
     console.log(`Processing request: "${request}"`);
     console.log('═══════════════════════════════════════\n');
 
+    await this.eventBus.emit('request:received', { request }, 'system');
+
     // Step 1: CEO analyzes the request
     const ceoResponse = await this.ceo.handleRequest(request);
-    
     if (!ceoResponse.success) {
-    return ceoResponse;
+      return ceoResponse;
     }
+
+    await this.eventBus.emit('ceo:project-created', { project: ceoResponse.data.project }, 'ceo');
 
     // Step 2: Manager decomposes project into tasks
     const project = ceoResponse.data.project;
     const managerResponse = await this.manager.handleProject(project);
-    
     if (!managerResponse.success) {
-    return managerResponse;
+      return managerResponse;
     }
 
-    // Step 3: Workers execute tasks
-    const tasks = managerResponse.data.tasks;
-    for (const task of tasks) {
-      const worker = this.getAvailableWorker();
-      if (worker) {
-        await worker.executeTask(task);
-      }
-    }
+    const tasks: Task[] = managerResponse.data.tasks;
+    await this.eventBus.emit('manager:tasks-decomposed', { tasks }, 'manager');
+
+    // Step 3: Workers execute tasks via TaskQueue
+    const executor: TaskExecutor = async (task: Task) => {
+      const worker = this.getAvailableWorker(task);
+      const result = await worker.executeTask(task);
+      return result;
+    };
+
+    const results = await this.taskQueue.enqueueAll(tasks, executor);
+    await this.taskQueue.drain();
+
+    await this.eventBus.emit('manager:tasks-assigned', {
+      assignments: Object.fromEntries(results),
+    }, 'manager');
 
     // Step 4: Manager reviews completed work
     const reviewResponse = await this.manager.reviewCompletedTasks();
-    
+    await this.eventBus.emit('manager:review-complete', { review: reviewResponse }, 'manager');
+
     // Step 5: CEO receives final report
+    const finalReview = await this.ceo.reviewProject({
+      ...project,
+      tasks: tasks.map(t => ({ ...t, status: 'completed' as const, updatedAt: new Date() })),
+    });
+
+    await this.eventBus.emit('ceo:project-reviewed', { review: finalReview }, 'ceo');
+    await this.eventBus.emit('orchestrator:project-complete', { project }, 'system');
+
     console.log('\n═══════════════════════════════════════');
     console.log('🎉 PROJECT COMPLETED SUCCESSFULLY!');
     console.log('═══════════════════════════════════════\n');
@@ -92,21 +115,27 @@ export class Orchestrator {
     return {
       success: true,
       message: 'Request processed successfully',
-      data: {
-        ceoResponse,
-        managerResponse,
-        reviewResponse
-      }
+      data: { ceoResponse, managerResponse, reviewResponse },
     };
   }
 
-  private getAvailableWorker(): WorkerAgent | null {
-    // Simple round-robin for demo
-    return this.workers[Math.floor(Math.random() * this.workers.length)];
+  private getAvailableWorker(task: Task): WorkerAgent {
+    // Simple assignment based on task type
+    const idx = Math.abs(task.description.length) % this.workers.length;
+    return this.workers[idx];
   }
 
   async stop(): Promise<void> {
     this.isRunning = false;
+    await this.eventBus.emit('orchestrator:stopped', {}, 'system');
     console.log('\n🛑 Stopping Orchestrator...');
+  }
+
+  getEventBus(): EventBus {
+    return this.eventBus;
+  }
+
+  getTaskQueue(): TaskQueue {
+    return this.taskQueue;
   }
 }

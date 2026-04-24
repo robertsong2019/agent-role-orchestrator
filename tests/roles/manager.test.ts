@@ -4,12 +4,18 @@
 
 import { ManagerAgent } from '../../src/roles/manager';
 import { Project, TaskType, TaskPriority } from '../../src/types';
+import { EventBus } from '../../src/events';
+import { TaskDecomposer } from '../../src/decomposer';
 
 describe('ManagerAgent', () => {
   let manager: ManagerAgent;
+  let eventBus: EventBus;
+  let decomposer: TaskDecomposer;
 
   beforeEach(() => {
-    manager = new ManagerAgent();
+    eventBus = new EventBus();
+    decomposer = new TaskDecomposer();
+    manager = new ManagerAgent(eventBus, decomposer);
   });
 
   describe('initialization', () => {
@@ -27,7 +33,11 @@ describe('ManagerAgent', () => {
   });
 
   describe('handleProject', () => {
-    it('should decompose a project into tasks', async () => {
+  beforeEach(async () => {
+    await manager.initialize();
+  });
+
+  it('should decompose a project into tasks', async () => {
       const project: Project = {
         id: 'proj-123',
         name: 'Authentication System',
@@ -161,7 +171,11 @@ describe('ManagerAgent', () => {
   });
 
   describe('reviewCompletedTasks', () => {
-    it('should report all tasks completed', async () => {
+  beforeEach(async () => {
+    await manager.initialize();
+  });
+
+  it('should report all tasks completed', async () => {
       const project: Project = {
         id: 'proj-123',
         name: 'Test Project',
