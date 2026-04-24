@@ -1,2 +1,3 @@
 timestamp	commit	metric	value	status	description
 2026-04-24T19:10	8d16846	test_pass_rate	151/151 (100%)	keep	baseline + fix 3 broken tests: EventBus sync error catch, TaskQueue deterministic mock, Worker init race
+2026-04-24T19:25	a827225	test_duration	134s→6s (23x faster)	keep	make simulateDelay configurable, reduce from 500/1500ms→10ms in tests
