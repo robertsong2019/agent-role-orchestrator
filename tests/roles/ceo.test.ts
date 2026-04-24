@@ -10,7 +10,7 @@ describe('CEOAgent', () => {
   let ceo: CEOAgent;
 
   beforeEach(() => {
-    ceo = new CEOAgent(new EventBus());
+    ceo = new CEOAgent(new EventBus(), { simulateDelay: 10 });
   });
 
   describe('initialization', () => {

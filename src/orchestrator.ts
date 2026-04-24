@@ -10,6 +10,10 @@ import { EventBus } from './events.js';
 import { TaskQueue, TaskExecutor } from './task-queue.js';
 import { TaskDecomposer } from './decomposer.js';
 
+export interface OrchestratorConfig {
+  simulateDelay?: number;
+}
+
 export class Orchestrator {
   private ceo: CEOAgent;
   private manager: ManagerAgent;
@@ -19,16 +23,17 @@ export class Orchestrator {
   private taskQueue: TaskQueue;
   private decomposer: TaskDecomposer;
 
-  constructor() {
+  constructor(config?: OrchestratorConfig) {
+    const delay = config?.simulateDelay ?? 500;
     this.eventBus = new EventBus();
     this.taskQueue = new TaskQueue({ maxConcurrency: 2 }, this.eventBus);
     this.decomposer = new TaskDecomposer();
-    this.ceo = new CEOAgent(this.eventBus);
+    this.ceo = new CEOAgent(this.eventBus, { simulateDelay: delay });
     this.manager = new ManagerAgent(this.eventBus, this.decomposer);
     this.workers = [
-      new WorkerAgent('Worker-1'),
-      new WorkerAgent('Worker-2'),
-      new WorkerAgent('Worker-3'),
+      new WorkerAgent('Worker-1', { simulateDelay: delay }),
+      new WorkerAgent('Worker-2', { simulateDelay: delay }),
+      new WorkerAgent('Worker-3', { simulateDelay: delay }),
     ];
   }
 

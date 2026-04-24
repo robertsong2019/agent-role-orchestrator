@@ -8,7 +8,7 @@ describe('Orchestrator', () => {
   let orchestrator: Orchestrator;
 
   beforeEach(() => {
-    orchestrator = new Orchestrator();
+    orchestrator = new Orchestrator({ simulateDelay: 10 });
   });
 
   afterEach(async () => {

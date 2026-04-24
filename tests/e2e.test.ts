@@ -8,7 +8,7 @@ describe('End-to-End Workflow', () => {
   let orchestrator: Orchestrator;
 
   beforeAll(async () => {
-    orchestrator = new Orchestrator();
+    orchestrator = new Orchestrator({ simulateDelay: 10 });
     await orchestrator.start();
   });
 

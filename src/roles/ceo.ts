@@ -13,8 +13,11 @@ export class CEOAgent implements Agent {
   private memory!: MemorySystem;
   private eventBus: EventBus;
 
-  constructor(eventBus: EventBus) {
+  private simulateDelay: number;
+
+  constructor(eventBus: EventBus, config?: { simulateDelay?: number }) {
     this.eventBus = eventBus;
+    this.simulateDelay = config?.simulateDelay ?? 500;
   }
 
   async initialize(): Promise<void> {
@@ -43,7 +46,7 @@ export class CEOAgent implements Agent {
       console.log(`💭 CEO: Recalling ${recentDecisions.length} recent decisions from memory`);
     }
 
-    await this.delay(500);
+    await this.delay(this.simulateDelay);
 
     this.project = {
       id: this.generateId(),
@@ -101,7 +104,7 @@ export class CEOAgent implements Agent {
       console.log(`💭 CEO: Recalled ${projectMemories.length} memories about this project`);
     }
 
-    await this.delay(500);
+    await this.delay(this.simulateDelay);
 
     const completedTasks = project.tasks.filter(t => t.status === 'completed');
     const totalTasks = project.tasks.length;
