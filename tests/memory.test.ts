@@ -280,4 +280,37 @@ describe('MemorySystem', () => {
     const stats = system.getStats();
     expect(stats.total).toBe(0);
   });
+
+  describe('consolidate()', () => {
+    test('should promote high-importance short-term entries to long-term', () => {
+      system.shortTerm.add({ type: 'fact', content: 'Important', importance: 0.9 });
+      system.shortTerm.add({ type: 'fact', content: 'Trivial', importance: 0.3 });
+      system.shortTerm.add({ type: 'decision', content: 'Key decision', importance: 0.8 });
+
+      const promoted = system.consolidate();
+
+      expect(promoted).toBe(2);
+      expect(system.shortTerm.size()).toBe(1);
+      expect(system.longTerm.size()).toBe(2);
+    });
+
+    test('should respect custom minImportance threshold', () => {
+      system.shortTerm.add({ type: 'fact', content: 'A', importance: 0.6 });
+      system.shortTerm.add({ type: 'fact', content: 'B', importance: 0.8 });
+
+      const promoted = system.consolidate({ minImportance: 0.75 });
+
+      expect(promoted).toBe(1);
+      expect(system.longTerm.getAll()[0].content).toBe('B');
+    });
+
+    test('should return 0 when no entries qualify', () => {
+      system.shortTerm.add({ type: 'fact', content: 'Low', importance: 0.1 });
+
+      const promoted = system.consolidate();
+
+      expect(promoted).toBe(0);
+      expect(system.shortTerm.size()).toBe(1);
+    });
+  });
 });

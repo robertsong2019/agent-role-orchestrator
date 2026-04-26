@@ -221,6 +221,18 @@ export class ShortTermMemory {
   }
 
   /**
+   * Remove entry by id
+   */
+  remove(id: string): boolean {
+    const idx = this.entries.findIndex(e => e.id === id);
+    if (idx !== -1) {
+      this.entries.splice(idx, 1);
+      return true;
+    }
+    return false;
+  }
+
+  /**
    * Clear short-term memory
    */
   clear(): void {
@@ -627,6 +639,27 @@ export class MemorySystem {
       longTerm: this.longTerm.size(),
       total: this.working.size() + this.shortTerm.size() + this.longTerm.size(),
     };
+  }
+
+  /**
+   * Consolidate memories: promote high-importance short-term entries to long-term.
+   * Returns the number of promoted entries.
+   */
+  consolidate(opts?: { minImportance?: number }): number {
+    const minImportance = opts?.minImportance ?? 0.7;
+    const candidates = this.shortTerm.getAll().filter(e => e.importance >= minImportance);
+    let promoted = 0;
+    for (const entry of candidates) {
+      this.longTerm.add({
+        type: entry.type,
+        content: entry.content,
+        importance: entry.importance,
+        metadata: entry.metadata,
+      });
+      this.shortTerm.remove(entry.id);
+      promoted++;
+    }
+    return promoted;
   }
 
   /**
